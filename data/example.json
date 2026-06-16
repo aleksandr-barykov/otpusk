@@ -1,0 +1,44 @@
+{
+  "version": 2,
+  "locations": [
+    {
+      "id": "loc-1",
+      "name": "Париж",
+      "hotelName": "Апартаменты в Марэ",
+      "coords": { "lat": 48.8596, "lng": 2.3620 },
+      "description": "Романтическая поездка в столицу Франции на 4 дня"
+    },
+    {
+      "id": "loc-2",
+      "name": "Санкт-Петербург",
+      "hotelName": "Отель W",
+      "coords": { "lat": 59.9386, "lng": 30.3154 },
+      "description": "Культурная программа в Северной столице"
+    }
+  ],
+  "places": [
+    { "id": "pl-1", "locationId": "loc-1", "name": "Le Comptoir du Relais", "category": "eat", "coords": { "lat": 48.8516, "lng": 2.3354 }, "description": "Знаменитый французский ресторан с изысканной кухней в районе Сен-Жермен", "order": 0 },
+    { "id": "pl-2", "locationId": "loc-1", "name": "Café de Flore", "category": "eat", "coords": { "lat": 48.8541, "lng": 2.3325 }, "description": "Легендарное кафе, где любили бывать Сартр и Камю", "order": 1 },
+    { "id": "pl-3", "locationId": "loc-1", "name": "L'As du Fallafel", "category": "eat", "coords": { "lat": 48.8578, "lng": 2.3600 }, "description": "Лучший фалафель в Париже на улице Розье", "order": 2 },
+    { "id": "pl-4", "locationId": "loc-1", "name": "Елисейские Поля", "category": "walk", "coords": { "lat": 48.8698, "lng": 2.3075 }, "description": "Главный проспект Парижа от площади Конкорд до Триумфальной арки", "order": 0 },
+    { "id": "pl-5", "locationId": "loc-1", "name": "Монмартр", "category": "walk", "coords": { "lat": 48.8867, "lng": 2.3431 }, "description": "Художественный район с прекрасным видом на город и Сакре-Кёр", "order": 1 },
+    { "id": "pl-6", "locationId": "loc-1", "name": "Люксембургский сад", "category": "walk", "coords": { "lat": 48.8462, "lng": 2.3373 }, "description": "Красивейший парк с фонтанами и статуями", "order": 2 },
+    { "id": "pl-7", "locationId": "loc-1", "name": "Эйфелева башня", "category": "see", "coords": { "lat": 48.8584, "lng": 2.2945 }, "description": "Символ Парижа, обязателен к посещению вечером с подсветкой", "order": 0 },
+    { "id": "pl-8", "locationId": "loc-1", "name": "Лувр", "category": "see", "coords": { "lat": 48.8606, "lng": 2.3376 }, "description": "Крупнейший музей мира с Моной Лизой и Венерой Милосской", "order": 1 },
+    { "id": "pl-9", "locationId": "loc-1", "name": "Нотр-Дам де Пари", "category": "see", "coords": { "lat": 48.8529, "lng": 2.3499 }, "description": "Готический собор на острове Сите", "order": 2 },
+    { "id": "pl-10", "locationId": "loc-2", "name": "Европа", "category": "eat", "coords": { "lat": 59.9374, "lng": 30.3088 }, "description": "Ресторан с панорамным видом на Исаакиевский собор", "order": 0 },
+    { "id": "pl-11", "locationId": "loc-2", "name": "Birch", "category": "eat", "coords": { "lat": 59.9462, "lng": 30.2894 }, "description": "Современная скандинавская кухня, одна из лучших в городе", "order": 1 },
+    { "id": "pl-12", "locationId": "loc-2", "name": "Невский проспект", "category": "walk", "coords": { "lat": 59.9343, "lng": 30.3350 }, "description": "Главная улица города от Адмиралтейства до Александро-Невской лавры", "order": 0 },
+    { "id": "pl-13", "locationId": "loc-2", "name": "Летний сад", "category": "walk", "coords": { "lat": 59.9468, "lng": 30.3346 }, "description": "Старейший парк с фонтанами и мраморными статуями", "order": 1 },
+    { "id": "pl-14", "locationId": "loc-2", "name": "Эрмитаж", "category": "see", "coords": { "lat": 59.9411, "lng": 30.3129 }, "description": "Один из величайших музеев мира в Зимнем дворце", "order": 0 },
+    { "id": "pl-15", "locationId": "loc-2", "name": "Петропавловская крепость", "category": "see", "coords": { "lat": 59.9502, "lng": 30.3167 }, "description": "Основание города, собор с усыпальницей Романовых", "order": 1 },
+    { "id": "pl-16", "locationId": "loc-2", "name": "Исаакиевский собор", "category": "see", "coords": { "lat": 59.9345, "lng": 30.3064 }, "description": "Величайший православный собор с колоннадой и видом на город", "order": 2 }
+  ],
+  "routes": [
+    { "id": "rt-1", "locationId": "loc-1", "dayNumber": 1, "placeIds": ["pl-8", "pl-2", "pl-7"], "notes": "Музей + уютное кафе + Эйфелева башня вечером" },
+    { "id": "rt-2", "locationId": "loc-1", "dayNumber": 2, "placeIds": ["pl-5", "pl-3", "pl-9"], "notes": "Монмартр и остров Сите" },
+    { "id": "rt-3", "locationId": "loc-2", "dayNumber": 1, "placeIds": ["pl-14", "pl-10", "pl-12"], "notes": "Прогулка по центру" },
+    { "id": "rt-4", "locationId": "loc-2", "dayNumber": 2, "placeIds": ["pl-15", "pl-13", "pl-16", "pl-11"], "notes": "Петроградская сторона + ужин" }
+  ],
+  "nextIds": { "loc": 3, "pl": 17, "rt": 5 }
+}
