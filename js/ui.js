@@ -235,7 +235,10 @@ export function renderRoute(locId) {
             </div>
           </div>
           <div class="day-right">
-            <strong style="display:block;margin-bottom:8px;font-size:14px">Доступные места</strong>
+            <div class="day-right-header">
+              <strong style="font-size:14px">Доступные места</strong>
+              <button class="btn btn-sm btn-primary" data-action="add-place" style="font-size:12px">+ Место</button>
+            </div>
             <div class="available-places">
               ${allPlaces.map(p => {
                 const cat = CATEGORIES[p.category];

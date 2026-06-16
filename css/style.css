@@ -333,6 +333,7 @@ header nav { display: flex; gap: 8px; }
 }
 .time-input:focus { border-color: var(--primary); }
 
+.day-right-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
 .available-places { max-height: 400px; overflow-y: auto; }
 .available-place {
   display: flex;

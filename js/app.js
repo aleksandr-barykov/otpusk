@@ -377,7 +377,10 @@ function handleSubmit(e) {
       const locId = form.dataset.locid || Ui.getCurrentLocId();
       Store.addPlace({ locationId: locId, name: data.name, category: data.category, coords: { lat: +data.lat, lng: +data.lng }, description: data.description || '' });
       Ui.hideModal();
-      if (locId && document.getElementById('page-location').classList.contains('active')) {
+      if (locId && document.getElementById('page-route').classList.contains('active')) {
+        reRenderRoute();
+        updateMapMarkers(locId);
+      } else if (locId && document.getElementById('page-location').classList.contains('active')) {
         Ui.reRenderPlaces(locId);
         updateMapMarkers(locId);
         setTimeout(setupDragDrop, 50);
@@ -390,7 +393,10 @@ function handleSubmit(e) {
       Store.updatePlace(form.dataset.id, { name: data.name, category: data.category, coords: { lat: +data.lat, lng: +data.lng }, description: data.description || '' });
       Ui.hideModal();
       const locId = Ui.getCurrentLocId();
-      if (locId && document.getElementById('page-location').classList.contains('active')) {
+      if (locId && document.getElementById('page-route').classList.contains('active')) {
+        reRenderRoute();
+        updateMapMarkers(locId);
+      } else if (locId && document.getElementById('page-location').classList.contains('active')) {
         Ui.reRenderPlaces(locId);
         updateMapMarkers(locId);
         setTimeout(setupDragDrop, 50);
