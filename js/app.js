@@ -2,7 +2,7 @@ import * as Store from './store.js';
 import * as Ui from './ui.js';
 import * as Map from './map.js';
 import { APP_CONFIG } from '../config.js';
-import { debounce, escHtml, buildRouteUrl, CATEGORIES } from './utils.js';
+import { escHtml, buildRouteUrl, CATEGORIES } from './utils.js';
 
 init();
 
@@ -31,7 +31,7 @@ function handleRoute() {
   } else if (parts[0] === 'location' && parts.length === 2) {
     Ui.renderLocation(parts[1]);
     setTimeout(() => initMapForLocation(parts[1]), 100);
-    setTimeout(() => { setupSearch(); setupDragDrop(); }, 150);
+    setTimeout(setupDragDrop, 150);
   } else if (parts[0] === 'location' && parts.length === 3 && parts[2] === 'route') {
     Ui.renderRoute(parts[1]);
     setTimeout(setupDragDrop, 100);
@@ -66,41 +66,6 @@ function updateMapMarkers(locId) {
   Store.getPlaces(locId).forEach(p => {
     Map.addMarker(p.coords, `<div style="font-size:22px">${icons[p.category]}</div>`, p.id);
   });
-}
-
-function setupSearch() {
-  const input = document.getElementById('place-search');
-  const results = document.getElementById('search-results');
-  if (!input || !results) return;
-
-  const doSearch = debounce(async () => {
-    const q = input.value.trim();
-    if (!q) { results.style.display = 'none'; return; }
-    const data = await Map.searchPlaces(q);
-    if (data.length === 0) { results.style.display = 'none'; return; }
-    results.innerHTML = data.map(r =>
-      `<div class="search-result" data-sr-name="${escHtml(r.name)}" data-sr-lat="${r.coords.lat}" data-sr-lng="${r.coords.lng}" data-sr-desc="${escHtml(r.description || '')}">
-        <div class="sr-info"><div class="sr-name">${escHtml(r.name)}</div><div class="sr-desc">${escHtml(r.description || '')}</div></div>
-        <button class="btn btn-primary btn-sm sr-add">+ Добавить</button>
-      </div>`
-    ).join('');
-    results.style.display = 'block';
-    results.querySelectorAll('.sr-add').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const parent = btn.closest('.search-result');
-        const locId = Ui.getCurrentLocId();
-        Ui.showAddPlaceModal(locId, null, {
-          name: parent.dataset.srName,
-          coords: { lat: +parent.dataset.srLat, lng: +parent.dataset.srLng },
-          description: parent.dataset.srDesc
-        });
-        results.style.display = 'none';
-        input.value = '';
-      });
-    });
-  }, 400);
-  input.addEventListener('input', doSearch);
 }
 
 function setupDragDrop() {
@@ -225,6 +190,8 @@ function handleClick(e) {
       if (locId && document.getElementById('page-location').classList.contains('active')) {
         Ui.reRenderPlaces(locId);
         updateMapMarkers(locId);
+      } else if (locId && document.getElementById('page-route').classList.contains('active')) {
+        reRenderRoute();
       } else {
         handleRoute();
       }

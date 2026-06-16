@@ -109,12 +109,7 @@ export async function renderLocation(locId) {
       <div class="hi-coords">Координаты: <span data-action="copy-coords" data-coords="${loc.coords.lat},${loc.coords.lng}">${coordsToString(loc.coords)}</span></div>
     </div>
 
-    ${!hasAPI ? `<div class="no-api-warning">⚠ Яндекс.Карты не подключены. Укажите API-ключ в config.js для отображения карты и поиска мест.</div>` : ''}
-
-    <div class="search-section">
-      <input type="text" id="place-search" placeholder="🔍 Поиск места (например, Эйфелева башня)..." ${!hasAPI ? 'disabled' : ''}>
-      <div id="search-results" class="search-results" style="display:none"></div>
-    </div>
+    ${!hasAPI ? `<div class="no-api-warning">⚠ Яндекс.Карты не подключены. Укажите API-ключ в config.js для отображения карты.</div>` : ''}
 
     <div id="map-container"></div>
 
@@ -244,10 +239,13 @@ export function renderRoute(locId) {
             <div class="available-places">
               ${allPlaces.map(p => {
                 const cat = CATEGORIES[p.category];
-                return `<div class="available-place" data-action="add-available-place" data-place-id="${p.id}" data-route-id="${r.id}">
+                return `<div class="available-place">
                   <span class="ap-icon">${cat.icon}</span>
-                  <span class="ap-name">${escHtml(p.name)}</span>
-                  <span style="margin-left:auto;font-size:11px;color:var(--text2)">+</span>
+                  <span class="ap-name" data-action="add-available-place" data-place-id="${p.id}" data-route-id="${r.id}">${escHtml(p.name)}</span>
+                  <span class="ap-actions">
+                    <button class="btn btn-sm btn-icon" data-action="edit-place" data-id="${p.id}" title="Редактировать">✎</button>
+                    <button class="btn btn-sm btn-icon btn-danger" data-action="delete-place" data-id="${p.id}" title="Удалить">✕</button>
+                  </span>
                 </div>`;
               }).join('')}
             </div>

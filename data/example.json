@@ -3,42 +3,44 @@
   "locations": [
     {
       "id": "loc-1",
-      "name": "Париж",
-      "hotelName": "Апартаменты в Марэ",
-      "coords": { "lat": 48.8596, "lng": 2.3620 },
-      "description": "Романтическая поездка в столицу Франции на 4 дня"
+      "name": "Кронштадт",
+      "hotelName": "Апартаменты в ЖК Фортеция",
+      "coords": { "lat": 59.986092, "lng": 29.796085 },
+      "description": "Семейная поездка в Кронштадт на 4 дня"
     },
     {
       "id": "loc-2",
-      "name": "Санкт-Петербург",
-      "hotelName": "Отель W",
-      "coords": { "lat": 59.9386, "lng": 30.3154 },
-      "description": "Культурная программа в Северной столице"
+      "name": "Петергоф",
+      "hotelName": "Апартаменты Дача",
+      "coords": { "lat": 59.879516, "lng": 29.918184 },
+      "description": "Семейная поездка в Петергоф на 4 дня"
     }
   ],
   "places": [
-    { "id": "pl-1", "locationId": "loc-1", "name": "Le Comptoir du Relais", "category": "eat", "coords": { "lat": 48.8516, "lng": 2.3354 }, "description": "Знаменитый французский ресторан с изысканной кухней в районе Сен-Жермен", "order": 0 },
-    { "id": "pl-2", "locationId": "loc-1", "name": "Café de Flore", "category": "eat", "coords": { "lat": 48.8541, "lng": 2.3325 }, "description": "Легендарное кафе, где любили бывать Сартр и Камю", "order": 1 },
-    { "id": "pl-3", "locationId": "loc-1", "name": "L'As du Fallafel", "category": "eat", "coords": { "lat": 48.8578, "lng": 2.3600 }, "description": "Лучший фалафель в Париже на улице Розье", "order": 2 },
-    { "id": "pl-4", "locationId": "loc-1", "name": "Елисейские Поля", "category": "walk", "coords": { "lat": 48.8698, "lng": 2.3075 }, "description": "Главный проспект Парижа от площади Конкорд до Триумфальной арки", "order": 0 },
-    { "id": "pl-5", "locationId": "loc-1", "name": "Монмартр", "category": "walk", "coords": { "lat": 48.8867, "lng": 2.3431 }, "description": "Художественный район с прекрасным видом на город и Сакре-Кёр", "order": 1 },
-    { "id": "pl-6", "locationId": "loc-1", "name": "Люксембургский сад", "category": "walk", "coords": { "lat": 48.8462, "lng": 2.3373 }, "description": "Красивейший парк с фонтанами и статуями", "order": 2 },
-    { "id": "pl-7", "locationId": "loc-1", "name": "Эйфелева башня", "category": "see", "coords": { "lat": 48.8584, "lng": 2.2945 }, "description": "Символ Парижа, обязателен к посещению вечером с подсветкой", "order": 0 },
-    { "id": "pl-8", "locationId": "loc-1", "name": "Лувр", "category": "see", "coords": { "lat": 48.8606, "lng": 2.3376 }, "description": "Крупнейший музей мира с Моной Лизой и Венерой Милосской", "order": 1 },
-    { "id": "pl-9", "locationId": "loc-1", "name": "Нотр-Дам де Пари", "category": "see", "coords": { "lat": 48.8529, "lng": 2.3499 }, "description": "Готический собор на острове Сите", "order": 2 },
-    { "id": "pl-10", "locationId": "loc-2", "name": "Европа", "category": "eat", "coords": { "lat": 59.9374, "lng": 30.3088 }, "description": "Ресторан с панорамным видом на Исаакиевский собор", "order": 0 },
-    { "id": "pl-11", "locationId": "loc-2", "name": "Birch", "category": "eat", "coords": { "lat": 59.9462, "lng": 30.2894 }, "description": "Современная скандинавская кухня, одна из лучших в городе", "order": 1 },
-    { "id": "pl-12", "locationId": "loc-2", "name": "Невский проспект", "category": "walk", "coords": { "lat": 59.9343, "lng": 30.3350 }, "description": "Главная улица города от Адмиралтейства до Александро-Невской лавры", "order": 0 },
-    { "id": "pl-13", "locationId": "loc-2", "name": "Летний сад", "category": "walk", "coords": { "lat": 59.9468, "lng": 30.3346 }, "description": "Старейший парк с фонтанами и мраморными статуями", "order": 1 },
-    { "id": "pl-14", "locationId": "loc-2", "name": "Эрмитаж", "category": "see", "coords": { "lat": 59.9411, "lng": 30.3129 }, "description": "Один из величайших музеев мира в Зимнем дворце", "order": 0 },
-    { "id": "pl-15", "locationId": "loc-2", "name": "Петропавловская крепость", "category": "see", "coords": { "lat": 59.9502, "lng": 30.3167 }, "description": "Основание города, собор с усыпальницей Романовых", "order": 1 },
-    { "id": "pl-16", "locationId": "loc-2", "name": "Исаакиевский собор", "category": "see", "coords": { "lat": 59.9345, "lng": 30.3064 }, "description": "Величайший православный собор с колоннадой и видом на город", "order": 2 }
+    { "id": "pl-1", "locationId": "loc-1", "name": "Ресторан «Форт»", "category": "eat", "coords": { "lat": 59.9912, "lng": 29.7735 }, "description": "Ресторан с панорамным видом на Финский залив", "order": 0 },
+    { "id": "pl-2", "locationId": "loc-1", "name": "Кафе «Остров»", "category": "eat", "coords": { "lat": 59.9898, "lng": 29.7834 }, "description": "Уютное кафе в центре Кронштадта", "order": 1 },
+    { "id": "pl-3", "locationId": "loc-1", "name": "Столовая «Адмиралтейская»", "category": "eat", "coords": { "lat": 59.9885, "lng": 29.7802 }, "description": "Недорогая и вкусная столовая рядом с Якорной площадью", "order": 2 },
+    { "id": "pl-4", "locationId": "loc-1", "name": "Якорная площадь", "category": "walk", "coords": { "lat": 59.9908, "lng": 29.7773 }, "description": "Главная площадь Кронштадта с памятником адмиралу Макарову", "order": 0 },
+    { "id": "pl-5", "locationId": "loc-1", "name": "Петровский парк", "category": "walk", "coords": { "lat": 59.9881, "lng": 29.7725 }, "description": "Старейший парк Кронштадта с видом на гавань", "order": 1 },
+    { "id": "pl-6", "locationId": "loc-1", "name": "Обводный канал", "category": "walk", "coords": { "lat": 59.9870, "lng": 29.7900 }, "description": "Живописная набережная вдоль исторического канала", "order": 2 },
+    { "id": "pl-7", "locationId": "loc-1", "name": "Никольский Морской собор", "category": "see", "coords": { "lat": 59.9902, "lng": 29.7795 }, "description": "Величественный морской собор — символ Кронштадта", "order": 0 },
+    { "id": "pl-8", "locationId": "loc-1", "name": "Форт «Константин»", "category": "see", "coords": { "lat": 59.9760, "lng": 29.7300 }, "description": "Исторический форт с музеем и смотровой площадкой", "order": 1 },
+    { "id": "pl-9", "locationId": "loc-1", "name": "Памятник Петру I", "category": "see", "coords": { "lat": 59.9893, "lng": 29.7788 }, "description": "Памятник основателю Кронштадта на Якорной площади", "order": 2 },
+    { "id": "pl-10", "locationId": "loc-2", "name": "Ресторан «Duck & Drake»", "category": "eat", "coords": { "lat": 59.8815, "lng": 29.9095 }, "description": "Ресторан европейской кухни в центре Петергофа", "order": 0 },
+    { "id": "pl-11", "locationId": "loc-2", "name": "Кафе «Парковое»", "category": "eat", "coords": { "lat": 59.8830, "lng": 29.9130 }, "description": "Лёгкие закуски и десерты рядом с Нижним парком", "order": 1 },
+    { "id": "pl-12", "locationId": "loc-2", "name": "Столовая «Английская»", "category": "eat", "coords": { "lat": 59.8802, "lng": 29.9155 }, "description": "Бюджетное питание для туристов", "order": 2 },
+    { "id": "pl-13", "locationId": "loc-2", "name": "Нижний парк", "category": "walk", "coords": { "lat": 59.8835, "lng": 29.9135 }, "description": "Главный парк Петергофа со знаменитыми фонтанами", "order": 0 },
+    { "id": "pl-14", "locationId": "loc-2", "name": "Английский парк", "category": "walk", "coords": { "lat": 59.8760, "lng": 29.9250 }, "description": "Пейзажный парк с Английским дворцом", "order": 1 },
+    { "id": "pl-15", "locationId": "loc-2", "name": "Александрия", "category": "walk", "coords": { "lat": 59.8805, "lng": 29.9010 }, "description": "Ландшафтный парк с дворцом Коттедж", "order": 2 },
+    { "id": "pl-16", "locationId": "loc-2", "name": "Большой дворец", "category": "see", "coords": { "lat": 59.8855, "lng": 29.9090 }, "description": "Главный дворец Петергофа с роскошными залами", "order": 0 },
+    { "id": "pl-17", "locationId": "loc-2", "name": "Фонтан «Самсон»", "category": "see", "coords": { "lat": 59.8850, "lng": 29.9075 }, "description": "Центральный фонтан Большого каскада", "order": 1 },
+    { "id": "pl-18", "locationId": "loc-2", "name": "Гроты Большого каскада", "category": "see", "coords": { "lat": 59.8848, "lng": 29.9080 }, "description": "Подземные гроты с фонтанами-шутихами", "order": 2 }
   ],
   "routes": [
-    { "id": "rt-1", "locationId": "loc-1", "dayNumber": 1, "startTime": "09:00", "items": [{ "placeId": "__hotel__", "duration": 0 }, { "placeId": "pl-8", "duration": 180 }, { "placeId": "pl-2", "duration": 60 }, { "placeId": "pl-7", "duration": 90 }], "notes": "Музей + уютное кафе + Эйфелева башня вечером" },
-    { "id": "rt-2", "locationId": "loc-1", "dayNumber": 2, "startTime": "10:00", "items": [{ "placeId": "__hotel__", "duration": 0 }, { "placeId": "pl-5", "duration": 120 }, { "placeId": "pl-3", "duration": 45 }, { "placeId": "pl-9", "duration": 60 }], "notes": "Монмартр и остров Сите" },
-    { "id": "rt-3", "locationId": "loc-2", "dayNumber": 1, "startTime": "10:00", "items": [{ "placeId": "__hotel__", "duration": 0 }, { "placeId": "pl-14", "duration": 240 }, { "placeId": "pl-10", "duration": 90 }, { "placeId": "pl-12", "duration": 60 }], "notes": "Прогулка по центру" },
-    { "id": "rt-4", "locationId": "loc-2", "dayNumber": 2, "startTime": "09:30", "items": [{ "placeId": "__hotel__", "duration": 0 }, { "placeId": "pl-15", "duration": 90 }, { "placeId": "pl-13", "duration": 60 }, { "placeId": "pl-16", "duration": 60 }, { "placeId": "pl-11", "duration": 120 }], "notes": "Петроградская сторона + ужин" }
+    { "id": "rt-1", "locationId": "loc-1", "dayNumber": 1, "startTime": "10:00", "items": [{ "placeId": "__hotel__", "duration": 0 }, { "placeId": "pl-7", "duration": 90 }, { "placeId": "pl-4", "duration": 45 }, { "placeId": "pl-9", "duration": 20 }, { "placeId": "pl-2", "duration": 60 }], "notes": "Морской собор и центр города" },
+    { "id": "rt-2", "locationId": "loc-1", "dayNumber": 2, "startTime": "10:00", "items": [{ "placeId": "__hotel__", "duration": 0 }, { "placeId": "pl-8", "duration": 120 }, { "placeId": "pl-5", "duration": 60 }, { "placeId": "pl-1", "duration": 90 }], "notes": "Форты и парки" },
+    { "id": "rt-3", "locationId": "loc-2", "dayNumber": 1, "startTime": "09:30", "items": [{ "placeId": "__hotel__", "duration": 0 }, { "placeId": "pl-16", "duration": 120 }, { "placeId": "pl-17", "duration": 30 }, { "placeId": "pl-18", "duration": 45 }, { "placeId": "pl-13", "duration": 90 }, { "placeId": "pl-11", "duration": 45 }], "notes": "Большой дворец и фонтаны Нижнего парка" },
+    { "id": "rt-4", "locationId": "loc-2", "dayNumber": 2, "startTime": "10:00", "items": [{ "placeId": "__hotel__", "duration": 0 }, { "placeId": "pl-15", "duration": 90 }, { "placeId": "pl-14", "duration": 60 }, { "placeId": "pl-10", "duration": 120 }], "notes": "Прогулка по паркам Александрия и Английский" }
   ],
-  "nextIds": { "loc": 3, "pl": 17, "rt": 5 }
+  "nextIds": { "loc": 3, "pl": 19, "rt": 5 }
 }

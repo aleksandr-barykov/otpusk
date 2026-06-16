@@ -190,43 +190,6 @@ header nav { display: flex; gap: 8px; }
   gap: 12px;
 }
 
-/* Search */
-.search-section { margin-bottom: 16px; }
-.search-section input {
-  width: 100%;
-  padding: 10px 14px;
-  border: 2px solid var(--border);
-  border-radius: 8px;
-  font-size: 14px;
-  outline: none;
-  transition: border 0.15s;
-}
-.search-section input:focus { border-color: var(--primary); }
-
-.search-results {
-  margin-top: 4px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow: hidden;
-  background: var(--card);
-}
-
-.search-result {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 14px;
-  cursor: pointer;
-  transition: background 0.1s;
-  border-bottom: 1px solid var(--border);
-}
-.search-result:last-child { border-bottom: none; }
-.search-result:hover { background: var(--bg); }
-.search-result .sr-name { font-weight: 500; font-size: 14px; }
-.search-result .sr-desc { font-size: 12px; color: var(--text2); }
-.search-result .sr-info { flex: 1; }
-.search-result .sr-add { flex-shrink: 0; }
-
 /* Route planner */
 .route-header {
   display: flex;
@@ -375,15 +338,15 @@ header nav { display: flex; gap: 8px; }
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 10px;
+  padding: 6px 8px;
   border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.1s;
   font-size: 13px;
 }
 .available-place:hover { background: var(--bg); }
 .available-place .ap-icon { font-size: 18px; flex-shrink: 0; }
-.available-place .ap-name { flex: 1; }
+.available-place .ap-name { flex: 1; cursor: pointer; padding: 2px 0; }
+.available-place .ap-actions { display: flex; gap: 2px; flex-shrink: 0; opacity: 0.3; }
+.available-place:hover .ap-actions { opacity: 1; }
 
 .day-notes {
   margin-top: 12px;
