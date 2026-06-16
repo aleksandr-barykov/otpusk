@@ -107,9 +107,14 @@ function setupDragDrop() {
   document.querySelectorAll('.places-list').forEach(list => {
     setupDnD(list, (ids) => Store.reorderPlaces(list.dataset.locid, ids));
   });
-  document.querySelectorAll('.route-places-list').forEach(list => {
-    setupDnD(list, (ids) => {
-      Store.updateRoute(list.dataset.routeId, { placeIds: ids });
+  document.querySelectorAll('.timeline').forEach(timeline => {
+    setupTimelineDnD(timeline, (orderedIdxs) => {
+      const routeId = timeline.dataset.routeId;
+      const route = Store.getRoute(routeId);
+      if (!route) return;
+      const newItems = orderedIdxs.map(idx => route.items[idx]);
+      Store.updateRoute(routeId, { items: newItems });
+      reRenderRoute();
     });
   });
 }
@@ -144,6 +149,44 @@ function setupDnD(container, onReorder) {
     container.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
     onReorder([...container.querySelectorAll('[data-drag-id]')].map(el => el.dataset.dragId));
   });
+}
+
+let tlDragIdx = null;
+function setupTimelineDnD(container, onReorder) {
+  if (!container) return;
+  container.addEventListener('dragstart', (e) => {
+    const item = e.target.closest('[data-tl-idx]');
+    if (!item) return;
+    tlDragIdx = item.dataset.tlIdx;
+    item.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', tlDragIdx);
+  });
+  container.addEventListener('dragend', () => {
+    container.querySelectorAll('.dragging,.drag-over').forEach(el => el.classList.remove('dragging', 'drag-over'));
+  });
+  container.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    const item = e.target.closest('[data-tl-idx]');
+    if (!item || item.dataset.tlIdx === tlDragIdx) return;
+    container.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+    item.classList.add('drag-over');
+  });
+  container.addEventListener('drop', (e) => {
+    e.preventDefault();
+    const target = e.target.closest('[data-tl-idx]');
+    if (!target || !tlDragIdx || tlDragIdx === target.dataset.tlIdx) return;
+    const dragEl = container.querySelector(`[data-tl-idx="${tlDragIdx}"]`);
+    if (!dragEl) return;
+    container.insertBefore(dragEl, target);
+    container.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+    onReorder([...container.querySelectorAll('[data-tl-idx]')].map(el => parseInt(el.dataset.tlIdx)));
+  });
+}
+
+function reRenderRoute() {
+  Ui.renderRoute(Ui.getCurrentLocId());
+  setTimeout(setupDragDrop, 100);
 }
 
 function handleClick(e) {
@@ -194,8 +237,7 @@ function handleClick(e) {
     if (!locId) return;
     const routes = Store.getRoutes(locId);
     if (routes.length === 0) {
-      const r = Store.addRoute({ locationId: locId, dayNumber: 1, placeIds: [btn.dataset.id] });
-      Ui.hideModal();
+      Store.addRoute({ locationId: locId, dayNumber: 1, items: [{ placeId: '__hotel__', duration: 0 }, { placeId: btn.dataset.id, duration: 60 }], startTime: '09:00' });
       if (confirm('Место добавлено в День 1. Перейти к маршрутам?')) {
         location.hash = `/location/${locId}/route`;
       }
@@ -205,28 +247,54 @@ function handleClick(e) {
     return;
   }
 
-  if (a === 'toggle-route-place') {
-    const pid = btn.dataset.placeId;
+  if (a === 'add-available-place') {
     const rid = btn.dataset.routeId;
+    const pid = btn.dataset.placeId;
     const route = Store.getRoute(rid);
     if (!route) return;
-    const newIds = route.placeIds.includes(pid)
-      ? route.placeIds.filter(x => x !== pid)
-      : [...route.placeIds, pid];
-    Store.updateRoute(rid, { placeIds: newIds });
-    Ui.renderRoute(Ui.getCurrentLocId());
-    setTimeout(setupDragDrop, 100);
+    route.items.push({ placeId: pid, duration: 60 });
+    Store.save();
+    reRenderRoute();
     return;
   }
 
-  if (a === 'remove-from-route') {
-    const pid = btn.dataset.placeId;
-    const rid = btn.dataset.routeId;
+  if (a === 'add-hotel-to-route') {
+    const rid = btn.dataset.id;
     const route = Store.getRoute(rid);
     if (!route) return;
-    Store.updateRoute(rid, { placeIds: route.placeIds.filter(x => x !== pid) });
-    Ui.renderRoute(Ui.getCurrentLocId());
-    setTimeout(setupDragDrop, 100);
+    route.items.push({ placeId: '__hotel__', duration: 0 });
+    Store.save();
+    reRenderRoute();
+    return;
+  }
+
+  if (a === 'add-place-to-route') {
+    const rid = btn.dataset.id;
+    const locId = Ui.getCurrentLocId();
+    const places = Store.getPlaces(locId);
+    const opts = places.map(p => {
+      const cat = CATEGORIES[p.category];
+      return `<option value="${p.id}">${cat.icon} ${escHtml(p.name)}</option>`;
+    }).join('');
+    Ui.showModal('Добавить место в маршрут', `
+      <form data-form="pick-place" data-route-id="${rid}">
+        <div class="form-group"><label>Выберите место</label><select name="placeId">${opts}</select></div>
+        <div class="form-actions">
+          <button type="button" class="btn" data-action="close-modal">Отмена</button>
+          <button type="submit" class="btn btn-primary">Добавить</button>
+        </div>
+      </form>`);
+    return;
+  }
+
+  if (a === 'remove-route-item') {
+    const rid = btn.dataset.routeId;
+    const idx = parseInt(btn.dataset.itemIdx);
+    const route = Store.getRoute(rid);
+    if (!route || !route.items[idx]) return;
+    route.items.splice(idx, 1);
+    Store.save();
+    reRenderRoute();
     return;
   }
 
@@ -255,7 +323,7 @@ function handleClick(e) {
     const locId = Ui.getCurrentLocId();
     const routes = Store.getRoutes(locId);
     const maxDay = routes.length ? Math.max(...routes.map(r => r.dayNumber)) : 0;
-    const r = Store.addRoute({ locationId: locId, dayNumber: maxDay + 1, placeIds: [] });
+    const r = Store.addRoute({ locationId: locId, dayNumber: maxDay + 1, items: [{ placeId: '__hotel__', duration: 0 }], startTime: '09:00' });
     Ui.setCurrentDayId(r.id);
     Ui.renderRoute(locId);
     setTimeout(setupDragDrop, 100);
@@ -279,9 +347,9 @@ function handleClick(e) {
     const loc = Store.getLocation(locId);
     const route = Store.getRoute(rid);
     const places = Store.getPlaces(locId);
-    if (loc && route && route.placeIds.length >= 2) {
-      const url = buildRouteUrl(loc.coords, route.placeIds, places);
-      window.open(url, '_blank');
+    if (loc && route) {
+      const url = buildRouteUrl(loc.coords, route, places);
+      if (url) window.open(url, '_blank');
     }
     return;
   }
@@ -370,15 +438,29 @@ function handleSubmit(e) {
       let routes = Store.getRoutes(locId);
       if (data.routeId === 'new') {
         const maxDay = routes.length ? Math.max(...routes.map(r => r.dayNumber)) : 0;
-        const r = Store.addRoute({ locationId: locId, dayNumber: maxDay + 1, placeIds: [pid] });
+        const r = Store.addRoute({ locationId: locId, dayNumber: maxDay + 1, items: [{ placeId: '__hotel__', duration: 0 }, { placeId: pid, duration: 60 }], startTime: '09:00' });
         Ui.setCurrentDayId(r.id);
       } else {
         const route = Store.getRoute(data.routeId);
-        if (route && !route.placeIds.includes(pid)) {
-          Store.updateRoute(data.routeId, { placeIds: [...route.placeIds, pid] });
+        if (route) {
+          route.items.push({ placeId: pid, duration: 60 });
+          Store.save();
         }
       }
       Ui.hideModal();
+      Ui.renderRoute(Ui.getCurrentLocId());
+      setTimeout(setupDragDrop, 100);
+      break;
+    }
+    case 'pick-place': {
+      const rid = form.dataset.routeId;
+      const route = Store.getRoute(rid);
+      if (route && data.placeId) {
+        route.items.push({ placeId: data.placeId, duration: 60 });
+        Store.save();
+        Ui.hideModal();
+        reRenderRoute();
+      }
       break;
     }
   }
@@ -403,5 +485,26 @@ function handleChange(e) {
   if (e.target.matches('.day-notes textarea')) {
     const rid = e.target.dataset.routeId;
     if (rid) Store.updateRoute(rid, { notes: e.target.value });
+  }
+
+  if (e.target.matches('[data-action="set-duration"]')) {
+    const rid = e.target.dataset.routeId;
+    const idx = parseInt(e.target.dataset.itemIdx);
+    const val = parseInt(e.target.value);
+    const route = Store.getRoute(rid);
+    if (route && route.items[idx]) {
+      route.items[idx].duration = isNaN(val) ? 60 : val;
+      Store.save();
+      reRenderRoute();
+    }
+  }
+
+  if (e.target.matches('[data-action="set-start-time"]')) {
+    const rid = e.target.dataset.routeId;
+    const route = Store.getRoute(rid);
+    if (route) {
+      Store.updateRoute(rid, { startTime: e.target.value });
+      reRenderRoute();
+    }
   }
 }

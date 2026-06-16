@@ -1,9 +1,24 @@
 const STORAGE_KEY = 'vacation-planner';
-
 let data = null;
 
 function def() {
-  return { version: 2, locations: [], places: [], routes: [], nextIds: { loc: 1, pl: 1, rt: 1 } };
+  return { version: 3, locations: [], places: [], routes: [], nextIds: { loc: 1, pl: 1, rt: 1 } };
+}
+
+function migrate() {
+  if (!data || data.version >= 3) return;
+  data.routes.forEach(r => {
+    if (r.placeIds && !r.items) {
+      r.items = r.placeIds.map(id => ({ placeId: id, duration: 60 }));
+      delete r.placeIds;
+    }
+    if (!r.items) r.items = [];
+    if (!r.items.length || r.items[0].placeId !== '__hotel__') {
+      r.items.unshift({ placeId: '__hotel__', duration: 0 });
+    }
+    if (!r.startTime) r.startTime = '09:00';
+  });
+  data.version = 3;
 }
 
 export function load() {
@@ -12,6 +27,7 @@ export function load() {
     data = raw ? JSON.parse(raw) : null;
   } catch { data = null; }
   if (!data) data = def();
+  migrate();
 }
 
 export function save() {
@@ -51,7 +67,8 @@ export function deleteLocation(id) {
 
 export function getPlaces(locationId) {
   if (!locationId) return [...data.places];
-  return data.places.filter(p => p.locationId === locationId).sort((a, b) => a.order - b.order);
+  const ps = data.places.filter(p => p.locationId === locationId);
+  return ps.sort((a, b) => a.order - b.order);
 }
 
 export function getPlace(id) { return data.places.find(p => p.id === id); }
@@ -74,7 +91,9 @@ export function updatePlace(id, u) {
 
 export function deletePlace(id) {
   data.places = data.places.filter(p => p.id !== id);
-  data.routes.forEach(r => { r.placeIds = r.placeIds.filter(x => x !== id); });
+  data.routes.forEach(r => {
+    if (r.items) r.items = r.items.filter(x => x.placeId !== id);
+  });
   save();
 }
 
@@ -96,7 +115,8 @@ export function getRoute(id) { return data.routes.find(r => r.id === id); }
 
 export function addRoute(r) {
   r.id = 'rt-' + data.nextIds.rt++;
-  r.placeIds = r.placeIds || [];
+  if (!r.items) r.items = [{ placeId: '__hotel__', duration: 0 }];
+  if (!r.startTime) r.startTime = '09:00';
   data.routes.push(r);
   save();
   return r;
@@ -124,6 +144,7 @@ export function importJSON(str) {
     const d = JSON.parse(str);
     if (!d.version || !Array.isArray(d.locations)) return false;
     data = d;
+    migrate();
     save();
     return true;
   } catch { return false; }

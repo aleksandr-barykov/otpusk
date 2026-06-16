@@ -1,6 +1,6 @@
 import * as Store from './store.js';
 import { APP_CONFIG } from '../config.js';
-import { CATEGORIES, escHtml, plural, coordsToString, buildRouteUrl } from './utils.js';
+import { CATEGORIES, escHtml, plural, coordsToString, buildRouteUrl, timeToMinutes, minutesToTime } from './utils.js';
 
 let currentLocId = null;
 let currentDayId = null;
@@ -8,6 +8,31 @@ let currentDayId = null;
 export function getCurrentLocId() { return currentLocId; }
 export function getCurrentDayId() { return currentDayId; }
 export function setCurrentDayId(id) { currentDayId = id; }
+
+function calcTimeline(items, startTime, allPlaces) {
+  let cur = timeToMinutes(startTime || '09:00');
+  return items.map((item, idx) => {
+    const dur = item.duration || 0;
+    const start = cur;
+    const end = start + dur;
+    cur = end;
+    let icon, name;
+    if (item.placeId === '__hotel__') {
+      icon = '🏨'; name = 'Отель';
+    } else {
+      const p = allPlaces.find(x => x.id === item.placeId);
+      const cat = CATEGORIES[p?.category] || {};
+      icon = cat.icon || '📍'; name = p ? p.name : '(удалено)';
+    }
+    return { ...item, idx, startMinutes: start, endMinutes: end, startStr: minutesToTime(start), endStr: minutesToTime(end), icon, name };
+  });
+}
+
+const DURATIONS = [
+  { v: 15, l: '15 мин' }, { v: 30, l: '30 мин' }, { v: 45, l: '45 мин' },
+  { v: 60, l: '1 ч' }, { v: 90, l: '1.5 ч' }, { v: 120, l: '2 ч' },
+  { v: 180, l: '3 ч' }, { v: 240, l: '4 ч' }
+];
 
 export function renderHome() {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -139,7 +164,7 @@ function placeCard(p) {
   </div>`;
 }
 
-export async function renderRoute(locId) {
+export function renderRoute(locId) {
   currentLocId = locId;
   const loc = Store.getLocation(locId);
   if (!loc) { renderHome(); return; }
@@ -152,16 +177,17 @@ export async function renderRoute(locId) {
   const allPlaces = Store.getPlaces(locId);
 
   if (!routes.length) {
-    const r = Store.addRoute({ locationId: locId, dayNumber: 1, placeIds: [] });
+    const r = Store.addRoute({ locationId: locId, dayNumber: 1, items: [{ placeId: '__hotel__', duration: 0 }], startTime: '09:00', notes: '' });
     routes.push(r);
   }
 
   if (!currentDayId || !routes.find(r => r.id === currentDayId)) {
     currentDayId = routes[0].id;
   }
+  const curRoute = routes.find(r => r.id === currentDayId) || routes[0];
+  if (curRoute) currentDayId = curRoute.id;
 
-  const currentRoute = routes.find(r => r.id === currentDayId) || routes[0];
-  if (currentRoute) currentDayId = currentRoute.id;
+  const durOpts = (sel) => DURATIONS.map(d => `<option value="${d.v}" ${d.v === sel ? 'selected' : ''}>${d.l}</option>`).join('');
 
   el.innerHTML = `
     <div class="page-header">
@@ -169,68 +195,71 @@ export async function renderRoute(locId) {
       <h2>${escHtml(loc.name)} — Маршруты</h2>
       <button class="btn" data-action="navigate" data-href="/location/${locId}">Места</button>
     </div>
-
     <div class="route-header">
       <div class="day-tabs">
-        ${routes.map((r, i) =>
-          `<button class="day-tab ${r.id === currentDayId ? 'active' : ''}" data-action="switch-day" data-id="${r.id}">День ${r.dayNumber}</button>`
-        ).join('')}
+        ${routes.map(r => `<button class="day-tab ${r.id === currentDayId ? 'active' : ''}" data-action="switch-day" data-id="${r.id}">День ${r.dayNumber}</button>`).join('')}
         <button class="btn btn-sm" data-action="add-day" title="Добавить день">+ День</button>
       </div>
     </div>
-
-    ${routes.map(r => `
-      <div class="day-panel ${r.id === currentDayId ? 'active' : ''}" data-day="${r.id}">
+    ${routes.map(r => {
+      const tl = calcTimeline(r.items || [], r.startTime || '09:00', allPlaces);
+      return `<div class="day-panel ${r.id === currentDayId ? 'active' : ''}" data-day="${r.id}">
         <div class="day-content">
           <div class="day-left">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <div class="day-header-bar">
               <strong>День ${r.dayNumber}</strong>
+              <label style="font-size:13px;color:var(--text2)">Начало: <input type="time" value="${r.startTime || '09:00'}" data-action="set-start-time" data-id="${r.id}" class="time-input"></label>
               <button class="btn btn-sm btn-danger" data-action="delete-day" data-id="${r.id}" ${routes.length <= 1 ? 'disabled' : ''}>✕ День</button>
             </div>
-            <div class="route-places-list" data-route-id="${r.id}">
-              ${r.placeIds.map((pid, idx) => {
-                const p = allPlaces.find(x => x.id === pid);
-                if (!p) return '';
-                const cat = CATEGORIES[p.category];
-                return `<div class="route-place-card" draggable="true" data-drag-id="${p.id}" data-route-id="${r.id}">
-                  <div class="rp-num">${idx + 1}</div>
-                  <div class="rp-info">
-                    <div class="rp-name">${cat.icon} ${escHtml(p.name)}</div>
-                    <div class="rp-cat">${cat.label}</div>
+
+            <div class="timeline" data-route-id="${r.id}">
+              ${tl.map(item => `
+                <div class="tl-item" draggable="true" data-tl-idx="${item.idx}" data-route-id="${r.id}">
+                  <div class="tl-time">${item.startStr}${item.duration > 0 ? '–' + item.endStr : ''}</div>
+                  <div class="tl-line"><div class="tl-dot"></div></div>
+                  <div class="tl-content">
+                    <span class="tl-icon">${item.icon}</span>
+                    <span class="tl-name">${escHtml(item.name)}</span>
+                    ${item.placeId !== '__hotel__'
+                      ? `<select class="tl-duration" data-action="set-duration" data-route-id="${r.id}" data-item-idx="${item.idx}">${durOpts(item.duration)}</select>`
+                      : '<span class="tl-duration" style="border:none;background:transparent;font-size:12px;color:var(--text2)">—</span>'}
+                    <button class="btn btn-sm btn-icon btn-danger" data-action="remove-route-item" data-route-id="${r.id}" data-item-idx="${item.idx}" title="Убрать">✕</button>
                   </div>
-                  <button class="btn btn-sm btn-icon btn-danger" data-action="remove-from-route" data-place-id="${p.id}" data-route-id="${r.id}" title="Убрать">✕</button>
-                </div>`;
-              }).join('')}
-              ${r.placeIds.length === 0 ? '<div style="color:var(--text2);font-size:13px;padding:12px">Нет мест в маршруте. Добавьте из списка справа.</div>' : ''}
+                </div>`).join('')}
             </div>
+
+            <div class="tl-actions">
+              <button class="btn btn-sm" data-action="add-hotel-to-route" data-id="${r.id}">+ 🏨 Отель</button>
+              <button class="btn btn-sm btn-primary" data-action="add-place-to-route" data-id="${r.id}">+ 📍 Место</button>
+            </div>
+
+            ${tl.length >= 2 ? `<button class="btn btn-primary" style="margin-top:12px" data-action="build-route" data-id="${r.id}" data-locid="${locId}">🧭 Построить маршрут в Яндекс.Картах</button>` : ''}
+
             <div class="day-notes">
-              <textarea placeholder="Заметки на день..." data-route-id="${r.id}" data-action="notes-input">${escHtml(r.notes || '')}</textarea>
+              <textarea placeholder="Заметки на день..." data-route-id="${r.id}">${escHtml(r.notes || '')}</textarea>
             </div>
-            ${r.placeIds.length >= 2 ? `<button class="btn btn-primary" style="margin-top:8px" data-action="build-route" data-id="${r.id}" data-locid="${locId}">🧭 Построить маршрут в Яндекс.Картах</button>` : ''}
           </div>
           <div class="day-right">
             <strong style="display:block;margin-bottom:8px;font-size:14px">Доступные места</strong>
-            <div class="available-places" data-route-id="${r.id}">
+            <div class="available-places">
               ${allPlaces.map(p => {
                 const cat = CATEGORIES[p.category];
-                const inDay = r.placeIds.includes(p.id);
-                return `<div class="available-place ${inDay ? '' : ''}" data-action="toggle-route-place" data-place-id="${p.id}" data-route-id="${r.id}" style="${inDay ? 'opacity:0.4' : ''}">
+                return `<div class="available-place" data-action="add-available-place" data-place-id="${p.id}" data-route-id="${r.id}">
                   <span class="ap-icon">${cat.icon}</span>
                   <span class="ap-name">${escHtml(p.name)}</span>
-                  <span style="margin-left:auto;font-size:11px;color:var(--text2)">${inDay ? '✓' : '+'}</span>
+                  <span style="margin-left:auto;font-size:11px;color:var(--text2)">+</span>
                 </div>`;
               }).join('')}
             </div>
           </div>
         </div>
-      </div>
-    `).join('')}`;
+      </div>`;
+    }).join('')}`;
 }
 
 export function renderSettings() {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-settings').classList.add('active');
-
   const el = document.getElementById('page-settings');
   el.innerHTML = `
     <div class="page-header">
@@ -343,7 +372,7 @@ export function showAddToRouteModal(placeId, locId) {
   const p = Store.getPlace(placeId);
   if (!p) return;
   const dayOpts = routes.map(r =>
-    `<option value="${r.id}">День ${r.dayNumber}${r.placeIds.includes(placeId) ? ' (уже в маршруте)' : ''}</option>`
+    `<option value="${r.id}">День ${r.dayNumber}${r.items?.some(x => x.placeId === placeId) ? ' (уже в маршруте)' : ''}</option>`
   ).join('');
   showModal('Добавить в маршрут', `
     <form data-form="add-to-route" data-place-id="${placeId}" data-locid="${locId}">

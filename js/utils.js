@@ -51,12 +51,31 @@ export const CATEGORIES = {
   see: { icon: '👁', label: 'Что посмотреть', color: '#FF9800' }
 };
 
-export function buildRouteUrl(origin, placeIds, places) {
-  const points = [origin];
-  placeIds.forEach(id => {
-    const p = places.find(x => x.id === id);
-    if (p) points.push(p.coords);
+export function timeToMinutes(str) {
+  if (!str) return 540;
+  const [h, m] = str.split(':').map(Number);
+  return h * 60 + (m || 0);
+}
+
+export function minutesToTime(m) {
+  const h = Math.floor(m / 60);
+  const min = m % 60;
+  return `${String(h).padStart(2, '0')}:${String(min).padStart(2, '0')}`;
+}
+
+export function buildRouteUrl(locCoords, route, places) {
+  const items = route.items || (Array.isArray(route) ? route : []);
+  if (!items.length) return null;
+  const points = [];
+  items.forEach(item => {
+    if (item.placeId === '__hotel__') {
+      points.push(locCoords);
+    } else {
+      const p = places.find(x => x.id === item.placeId);
+      if (p) points.push(p.coords);
+    }
   });
+  if (points.length < 2) return null;
   const coordsStr = points.map(c => `${c.lat},${c.lng}`).join('~');
   return `https://yandex.ru/maps/?rtext=~${coordsStr}&rtt=mt`;
 }
