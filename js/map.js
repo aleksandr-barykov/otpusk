@@ -13,7 +13,6 @@ export async function loadAPI() {
   await new Promise((resolve, reject) => {
     const s = document.createElement('script');
     s.src = `https://api-maps.yandex.ru/3.0/?apikey=${key}&lang=ru_RU`;
-    s.type = 'module';
     s.onload = resolve;
     s.onerror = () => reject(new Error('Не удалось загрузить Яндекс.Карты'));
     document.head.appendChild(s);
