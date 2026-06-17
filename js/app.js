@@ -423,7 +423,7 @@ function handleSubmit(e) {
     }
     case 'add-place': {
       const locId = form.dataset.locid || Ui.getCurrentLocId();
-      Store.addPlace({ locationId: locId, name: data.name, category: data.category, coords: { lat: +data.lat, lng: +data.lng }, description: data.description || '' });
+      Store.addPlace({ locationId: locId, name: data.name, category: data.category, coords: { lat: +data.lat, lng: +data.lng }, description: data.description || '', url: data.url || '' });
       Ui.hideModal();
       Ui.toast('Место добавлено');
       if (locId && document.getElementById('page-route').classList.contains('active')) {
@@ -439,7 +439,7 @@ function handleSubmit(e) {
       break;
     }
     case 'edit-place': {
-      Store.updatePlace(form.dataset.id, { name: data.name, category: data.category, coords: { lat: +data.lat, lng: +data.lng }, description: data.description || '' });
+      Store.updatePlace(form.dataset.id, { name: data.name, category: data.category, coords: { lat: +data.lat, lng: +data.lng }, description: data.description || '', url: data.url || '' });
       Ui.hideModal();
       Ui.toast('Место сохранено');
       const locId = Ui.getCurrentLocId();
