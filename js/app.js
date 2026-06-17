@@ -32,6 +32,7 @@ function handleRoute() {
     Ui.renderLocation(parts[1]);
     setTimeout(() => initMapForLocation(parts[1]), 100);
     setTimeout(setupDragDrop, 150);
+    setTimeout(showDragHint, 300);
   } else if (parts[0] === 'location' && parts.length === 3 && parts[2] === 'route') {
     Ui.renderRoute(parts[1]);
     setTimeout(setupDragDrop, 100);
@@ -47,6 +48,7 @@ async function initMapForLocation(locId) {
   if (!loc || !APP_CONFIG.ymapsApiKey) return;
   const c = document.getElementById('map-container');
   if (!c) return;
+  Ui.showMapLoader();
   try {
     await Map.initMap(c, loc.coords, 14);
     Map.addMarker(loc.coords, '<div class="marker-label"><span class="marker-icon" style="font-size:28px">🏨</span><span class="marker-text">' + escHtml(loc.hotelName || 'Отель') + '</span></div>', 'hotel');
@@ -55,6 +57,7 @@ async function initMapForLocation(locId) {
       Map.addMarker(p.coords, '<div class="marker-label"><span class="marker-icon" style="font-size:22px">' + icons[p.category] + '</span><span class="marker-text">' + escHtml(p.name) + '</span></div>', p.id);
     });
   } catch (e) { console.warn('Map:', e.message); }
+  Ui.hideMapLoader();
 }
 
 function updateMapMarkers(locId) {
@@ -154,6 +157,14 @@ function reRenderRoute() {
   setTimeout(setupDragDrop, 100);
 }
 
+function showDragHint() {
+  if (localStorage.getItem('drag-hint-shown')) return;
+  const cards = document.querySelectorAll('.place-card');
+  if (cards.length < 2) return;
+  Ui.toast('💡 Перетащите места, чтобы изменить порядок');
+  localStorage.setItem('drag-hint-shown', '1');
+}
+
 function handleClick(e) {
   const btn = e.target.closest('[data-action]');
   if (!btn) return;
@@ -168,6 +179,7 @@ function handleClick(e) {
   if (a === 'delete-location') {
     if (confirm('Удалить локацию и все её места и маршруты?')) {
       Store.deleteLocation(btn.dataset.id);
+      Ui.toast('Локация удалена');
       handleRoute();
     }
     return;
@@ -186,6 +198,7 @@ function handleClick(e) {
   if (a === 'delete-place') {
     if (confirm('Удалить место?')) {
       Store.deletePlace(btn.dataset.id);
+      Ui.toast('Место удалено');
       const locId = Ui.getCurrentLocId();
       if (locId && document.getElementById('page-location').classList.contains('active')) {
         Ui.reRenderPlaces(locId);
@@ -205,9 +218,8 @@ function handleClick(e) {
     const routes = Store.getRoutes(locId);
     if (routes.length === 0) {
       Store.addRoute({ locationId: locId, dayNumber: 1, items: [{ placeId: '__hotel__', duration: 0 }, { placeId: btn.dataset.id, duration: 60 }], startTime: '09:00' });
-      if (confirm('Место добавлено в День 1. Перейти к маршрутам?')) {
-        location.hash = `/location/${locId}/route`;
-      }
+      Ui.toast('Место добавлено в День 1');
+      location.hash = `/location/${locId}/route`;
     } else {
       Ui.showAddToRouteModal(btn.dataset.id, locId);
     }
@@ -341,6 +353,7 @@ function handleClick(e) {
     if (confirm('Сбросить все данные к примеру? Текущие данные будут потеряны.')) {
       fetch('data/example.json').then(r => r.json()).then(d => {
         Store.loadExample(d);
+        Ui.toast('Данные сброшены к примеру');
         handleRoute();
       });
     }
@@ -377,6 +390,7 @@ function handleSubmit(e) {
       const locId = form.dataset.locid || Ui.getCurrentLocId();
       Store.addPlace({ locationId: locId, name: data.name, category: data.category, coords: { lat: +data.lat, lng: +data.lng }, description: data.description || '' });
       Ui.hideModal();
+      Ui.toast('Место добавлено');
       if (locId && document.getElementById('page-route').classList.contains('active')) {
         reRenderRoute();
         updateMapMarkers(locId);
@@ -392,6 +406,7 @@ function handleSubmit(e) {
     case 'edit-place': {
       Store.updatePlace(form.dataset.id, { name: data.name, category: data.category, coords: { lat: +data.lat, lng: +data.lng }, description: data.description || '' });
       Ui.hideModal();
+      Ui.toast('Место сохранено');
       const locId = Ui.getCurrentLocId();
       if (locId && document.getElementById('page-route').classList.contains('active')) {
         reRenderRoute();

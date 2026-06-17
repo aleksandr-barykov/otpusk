@@ -16,15 +16,16 @@ function calcTimeline(items, startTime, allPlaces) {
     const start = cur;
     const end = start + dur;
     cur = end;
-    let icon, name;
+    let icon, name, catKey;
     if (item.placeId === '__hotel__') {
-      icon = '🏨'; name = 'Отель';
+      icon = '🏨'; name = 'Отель'; catKey = 'hotel';
     } else {
       const p = allPlaces.find(x => x.id === item.placeId);
-      const cat = CATEGORIES[p?.category] || {};
+      catKey = p?.category || 'other';
+      const cat = CATEGORIES[catKey] || {};
       icon = cat.icon || '📍'; name = p ? p.name : '(удалено)';
     }
-    return { ...item, idx, startMinutes: start, endMinutes: end, startStr: minutesToTime(start), endStr: minutesToTime(end), icon, name };
+    return { ...item, idx, startMinutes: start, endMinutes: end, startStr: minutesToTime(start), endStr: minutesToTime(end), icon, name, catKey };
   });
 }
 
@@ -212,7 +213,7 @@ export function renderRoute(locId) {
               ${tl.map(item => `
                 <div class="tl-item" draggable="true" data-tl-idx="${item.idx}" data-route-id="${r.id}">
                   <div class="tl-time">${item.startStr}${item.duration > 0 ? '–' + item.endStr : ''}</div>
-                  <div class="tl-line"><div class="tl-dot"></div></div>
+                  <div class="tl-line"><div class="tl-dot tl-dot--${item.catKey}"></div></div>
                   <div class="tl-content">
                     <span class="tl-icon">${item.icon}</span>
                     <span class="tl-name">${escHtml(item.name)}</span>
@@ -372,6 +373,26 @@ export function showEditPlaceModal(id) {
         <button type="submit" class="btn btn-primary">Сохранить</button>
       </div>
     </form>`);
+}
+
+export function toast(msg, type) {
+  const c = document.getElementById('toast-container');
+  if (!c) return;
+  const el = document.createElement('div');
+  el.className = 'toast' + (type === 'error' ? ' toast--error' : type === 'success' ? ' toast--success' : '');
+  el.textContent = msg;
+  c.appendChild(el);
+  requestAnimationFrame(() => el.classList.add('toast--show'));
+  setTimeout(() => { el.classList.remove('toast--show'); setTimeout(() => el.remove(), 300); }, 3000);
+}
+
+export function showMapLoader() {
+  const el = document.getElementById('map-loader');
+  if (el) el.style.display = 'flex';
+}
+export function hideMapLoader() {
+  const el = document.getElementById('map-loader');
+  if (el) el.style.display = 'none';
 }
 
 export function showAddToRouteModal(placeId, locId) {

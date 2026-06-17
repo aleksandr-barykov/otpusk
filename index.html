@@ -4,12 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Планировщик отпуска</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <div id="app">
     <header>
-      <h1>🏖 Планировщик отпуска</h1>
+      <h1><span class="logo-icon">🏖</span> Планировщик отпуска</h1>
       <nav>
         <button class="btn btn-icon" data-action="navigate" data-href="" title="Главная">🏠</button>
         <button class="btn btn-icon" data-action="navigate" data-href="/settings" title="Настройки">⚙</button>
@@ -26,6 +29,13 @@
         <h3></h3>
         <div class="modal-body"></div>
       </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <div id="map-loader" class="map-loader" style="display:none">
+      <div class="loader-spinner"></div>
+      <span>Загрузка карты...</span>
     </div>
 
     <input type="file" id="import-file" accept=".json" style="display:none">
