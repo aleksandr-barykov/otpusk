@@ -36,6 +36,7 @@ function handleRoute() {
   } else if (parts[0] === 'location' && parts.length === 3 && parts[2] === 'route') {
     Ui.renderRoute(parts[1]);
     setTimeout(setupDragDrop, 100);
+    setTimeout(() => initRouteMap(parts[1]), 200);
   } else if (parts[0] === 'settings') {
     Ui.renderSettings();
   } else {
@@ -69,6 +70,29 @@ function updateMapMarkers(locId) {
   Store.getPlaces(locId).forEach(p => {
     Map.addMarker(p.coords, '<div class="marker-label"><span class="marker-icon" style="font-size:22px">' + icons[p.category] + '</span><span class="marker-text">' + escHtml(p.name) + '</span></div>', p.id);
   });
+}
+
+async function initRouteMap(locId) {
+  if (!APP_CONFIG.ymapsApiKey) return;
+  const loc = Store.getLocation(locId);
+  if (!loc) return;
+  const curRoute = Store.getRoute(Ui.getCurrentDayId());
+  if (!curRoute || !curRoute.items) return;
+  const places = curRoute.items.filter(x => x.placeId !== '__hotel__');
+  if (places.length < 1) return;
+  const c = document.getElementById('route-map-' + curRoute.id);
+  if (!c) return;
+  const allPlaces = Store.getPlaces(locId);
+  try {
+    await Map.initMap(c, loc.coords, 14);
+    const icons = { eat: '🍽', walk: '🚶', see: '👁' };
+    places.forEach((item, idx) => {
+      const p = allPlaces.find(x => x.id === item.placeId);
+      if (!p) return;
+      const num = idx + 1;
+      Map.addMarker(p.coords, `<div class="marker-label"><span class="marker-num">${num}</span><span class="marker-icon" style="font-size:18px">${icons[p.category] || '📍'}</span><span class="marker-text">${escHtml(p.name)}</span></div>`, p.id);
+    });
+  } catch (e) { console.warn('Route map:', e.message); }
 }
 
 function setupDragDrop() {
@@ -153,8 +177,10 @@ function setupTimelineDnD(container, onReorder) {
 }
 
 function reRenderRoute() {
-  Ui.renderRoute(Ui.getCurrentLocId());
+  const locId = Ui.getCurrentLocId();
+  Ui.renderRoute(locId);
   setTimeout(setupDragDrop, 100);
+  setTimeout(() => initRouteMap(locId), 200);
 }
 
 function showDragHint() {
@@ -295,6 +321,8 @@ function handleClick(e) {
     document.querySelectorAll('.day-panel').forEach(p => p.classList.remove('active'));
     const panel = document.querySelector(`.day-panel[data-day="${id}"]`);
     if (panel) panel.classList.add('active');
+    Map.destroyMap();
+    setTimeout(() => initRouteMap(Ui.getCurrentLocId()), 100);
     return;
   }
 
@@ -306,6 +334,7 @@ function handleClick(e) {
     Ui.setCurrentDayId(r.id);
     Ui.renderRoute(locId);
     setTimeout(setupDragDrop, 100);
+    setTimeout(() => initRouteMap(locId), 200);
     return;
   }
 
@@ -362,6 +391,12 @@ function handleClick(e) {
 
   if (a === 'copy-coords') {
     navigator.clipboard?.writeText(btn.dataset.coords).catch(() => {});
+    return;
+  }
+
+  if (a === 'open-url') {
+    const url = btn.dataset.url;
+    if (url) window.open(url, '_blank', 'noopener');
     return;
   }
 }

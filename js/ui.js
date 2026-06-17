@@ -155,6 +155,7 @@ function placeCard(p) {
     </div>
     <div class="actions-pl">
       <button class="btn btn-sm btn-primary" data-action="add-to-route" data-id="${p.id}" title="Добавить в маршрут">+</button>
+      ${p.url ? `<button class="btn btn-sm btn-icon" data-action="open-url" data-url="${escHtml(p.url)}" title="Открыть ссылку">🔗</button>` : ''}
       <button class="btn btn-sm btn-icon" data-action="edit-place" data-id="${p.id}" title="Редактировать">✎</button>
       <button class="btn btn-sm btn-icon btn-danger" data-action="delete-place" data-id="${p.id}" title="Удалить">✕</button>
     </div>
@@ -232,6 +233,10 @@ export function renderRoute(locId) {
 
             ${tl.length >= 2 ? `<button class="btn btn-primary" style="margin-top:12px" data-action="build-route" data-id="${r.id}" data-locid="${locId}">🧭 Построить маршрут в Яндекс.Картах</button>` : ''}
 
+            <div class="route-map-wrapper">
+              <div class="route-map" id="route-map-${r.id}" data-route-id="${r.id}"></div>
+            </div>
+
             <div class="day-notes">
               <textarea placeholder="Заметки на день..." data-route-id="${r.id}">${escHtml(r.notes || '')}</textarea>
             </div>
@@ -248,9 +253,9 @@ export function renderRoute(locId) {
                   <span class="ap-icon">${cat.icon}</span>
                   <span class="ap-info">
                     <span class="ap-name" data-action="add-available-place" data-place-id="${p.id}" data-route-id="${r.id}">${escHtml(p.name)}</span>
-                    ${p.url ? `<span class="ap-url">🔗 <a href="${escHtml(p.url)}" target="_blank" rel="noopener">ссылка</a></span>` : ''}
                   </span>
                   <span class="ap-actions">
+                    ${p.url ? `<button class="btn btn-sm btn-icon" data-action="open-url" data-url="${escHtml(p.url)}" title="Открыть ссылку">🔗</button>` : ''}
                     <button class="btn btn-sm btn-icon" data-action="edit-place" data-id="${p.id}" title="Редактировать">✎</button>
                     <button class="btn btn-sm btn-icon btn-danger" data-action="delete-place" data-id="${p.id}" title="Удалить">✕</button>
                   </span>
