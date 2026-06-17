@@ -149,6 +149,7 @@ function placeCard(p) {
     <div class="info">
       <div class="name">${escHtml(p.name)}</div>
       ${p.description ? `<div class="desc">${escHtml(p.description)}</div>` : ''}
+      ${p.url ? `<div class="url">🔗 <a href="${escHtml(p.url)}" target="_blank" rel="noopener">${escHtml(p.url)}</a></div>` : ''}
       <div class="coords">${coordsToString(p.coords)}</div>
     </div>
     <div class="actions-pl">
@@ -244,7 +245,10 @@ export function renderRoute(locId) {
                 const cat = CATEGORIES[p.category];
                 return `<div class="available-place">
                   <span class="ap-icon">${cat.icon}</span>
-                  <span class="ap-name" data-action="add-available-place" data-place-id="${p.id}" data-route-id="${r.id}">${escHtml(p.name)}</span>
+                  <span class="ap-info">
+                    <span class="ap-name" data-action="add-available-place" data-place-id="${p.id}" data-route-id="${r.id}">${escHtml(p.name)}</span>
+                    ${p.url ? `<span class="ap-url">🔗 <a href="${escHtml(p.url)}" target="_blank" rel="noopener">ссылка</a></span>` : ''}
+                  </span>
                   <span class="ap-actions">
                     <button class="btn btn-sm btn-icon" data-action="edit-place" data-id="${p.id}" title="Редактировать">✎</button>
                     <button class="btn btn-sm btn-icon btn-danger" data-action="delete-place" data-id="${p.id}" title="Удалить">✕</button>
@@ -338,6 +342,7 @@ export function showAddPlaceModal(locId, category, prefilled) {
         <div class="form-group"><label>Широта *</label><input name="lat" type="number" step="any" required value="${prefilled?.coords?.lat || ''}"></div>
         <div class="form-group"><label>Долгота *</label><input name="lng" type="number" step="any" required value="${prefilled?.coords?.lng || ''}"></div>
       </div>
+      <div class="form-group"><label>URL (ссылка на Яндекс.Карты или сайт)</label><input name="url" placeholder="https://yandex.ru/maps/... или https://..." value="${escHtml(prefilled?.url || '')}"></div>
       <div class="form-group"><label>Описание</label><textarea name="description">${escHtml(prefilled?.description || '')}</textarea></div>
       <div class="form-actions">
         <button type="button" class="btn" data-action="close-modal">Отмена</button>
@@ -360,6 +365,7 @@ export function showEditPlaceModal(id) {
         <div class="form-group"><label>Широта *</label><input name="lat" type="number" step="any" required value="${p.coords.lat}"></div>
         <div class="form-group"><label>Долгота *</label><input name="lng" type="number" step="any" required value="${p.coords.lng}"></div>
       </div>
+      <div class="form-group"><label>URL (ссылка на Яндекс.Карты или сайт)</label><input name="url" placeholder="https://yandex.ru/maps/..." value="${escHtml(p.url || '')}"></div>
       <div class="form-group"><label>Описание</label><textarea name="description">${escHtml(p.description || '')}</textarea></div>
       <div class="form-actions">
         <button type="button" class="btn" data-action="close-modal">Отмена</button>

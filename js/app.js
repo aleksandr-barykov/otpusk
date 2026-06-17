@@ -49,10 +49,10 @@ async function initMapForLocation(locId) {
   if (!c) return;
   try {
     await Map.initMap(c, loc.coords, 14);
-    Map.addMarker(loc.coords, '<div style="font-size:28px">🏨</div>', 'hotel');
+    Map.addMarker(loc.coords, '<div class="marker-label"><span class="marker-icon" style="font-size:28px">🏨</span><span class="marker-text">' + escHtml(loc.hotelName || 'Отель') + '</span></div>', 'hotel');
     const icons = { eat: '🍽', walk: '🚶', see: '👁' };
     Store.getPlaces(locId).forEach(p => {
-      Map.addMarker(p.coords, `<div style="font-size:22px">${icons[p.category]}</div>`, p.id);
+      Map.addMarker(p.coords, '<div class="marker-label"><span class="marker-icon" style="font-size:22px">' + icons[p.category] + '</span><span class="marker-text">' + escHtml(p.name) + '</span></div>', p.id);
     });
   } catch (e) { console.warn('Map:', e.message); }
 }
@@ -62,9 +62,9 @@ function updateMapMarkers(locId) {
   const icons = { eat: '🍽', walk: '🚶', see: '👁' };
   Map.clearMarkers();
   const loc = Store.getLocation(locId);
-  if (loc) Map.addMarker(loc.coords, '<div style="font-size:28px">🏨</div>', 'hotel');
+  if (loc) Map.addMarker(loc.coords, '<div class="marker-label"><span class="marker-icon" style="font-size:28px">🏨</span><span class="marker-text">' + escHtml(loc.hotelName || 'Отель') + '</span></div>', 'hotel');
   Store.getPlaces(locId).forEach(p => {
-    Map.addMarker(p.coords, `<div style="font-size:22px">${icons[p.category]}</div>`, p.id);
+    Map.addMarker(p.coords, '<div class="marker-label"><span class="marker-icon" style="font-size:22px">' + icons[p.category] + '</span><span class="marker-text">' + escHtml(p.name) + '</span></div>', p.id);
   });
 }
 

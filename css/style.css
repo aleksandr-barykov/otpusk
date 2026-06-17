@@ -182,6 +182,9 @@ header nav { display: flex; gap: 8px; }
 .place-card .info .name { font-weight: 600; font-size: 14px; }
 .place-card .info .desc { font-size: 13px; color: var(--text2); margin-top: 2px; }
 .place-card .info .coords { font-size: 11px; color: var(--text2); margin-top: 2px; }
+.place-card .info .url { font-size: 11px; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.place-card .info .url a { color: var(--primary); text-decoration: none; }
+.place-card .info .url a:hover { text-decoration: underline; }
 .place-card .actions-pl { display: flex; gap: 4px; flex-shrink: 0; align-items: center; }
 
 .add-place-form {
@@ -345,7 +348,11 @@ header nav { display: flex; gap: 8px; }
 }
 .available-place:hover { background: var(--bg); }
 .available-place .ap-icon { font-size: 18px; flex-shrink: 0; }
-.available-place .ap-name { flex: 1; cursor: pointer; padding: 2px 0; }
+.available-place .ap-info { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.available-place .ap-name { cursor: pointer; padding: 2px 0; }
+.available-place .ap-url { font-size: 10px; line-height: 1; }
+.available-place .ap-url a { color: var(--primary); text-decoration: none; }
+.available-place .ap-url a:hover { text-decoration: underline; }
 .available-place .ap-actions { display: flex; gap: 2px; flex-shrink: 0; opacity: 0.3; }
 .available-place:hover .ap-actions { opacity: 1; }
 
@@ -465,13 +472,25 @@ header nav { display: flex; gap: 8px; }
 
 /* Marker styles */
 .ymaps-marker {
-  font-size: 22px;
-  text-align: center;
-  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transform: translate(-50%, -100%);
   cursor: pointer;
   filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
 }
+.marker-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--card);
+  border-radius: 8px;
+  padding: 2px 8px 2px 4px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  white-space: nowrap;
+}
+.marker-icon { line-height: 1; }
+.marker-text { font-size: 12px; font-weight: 500; color: var(--text); max-width: 120px; overflow: hidden; text-overflow: ellipsis; }
 
 /* Responsive */
 @media (max-width: 768px) {
