@@ -314,6 +314,8 @@ header nav { display: flex; gap: 6px; }
 
 .tl-icon { font-size: 18px; flex-shrink: 0; }
 .tl-name { font-weight: 700; font-size: 14px; flex: 1; min-width: 60px; }
+.tl-name--link { color: var(--primary); text-decoration: none; cursor: pointer; }
+.tl-name--link:hover { text-decoration: underline; }
 
 .tl-duration {
   border: 1px solid var(--border);

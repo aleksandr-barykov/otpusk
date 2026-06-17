@@ -16,16 +16,16 @@ function calcTimeline(items, startTime, allPlaces) {
     const start = cur;
     const end = start + dur;
     cur = end;
-    let icon, name, catKey;
+    let icon, name, catKey, url;
     if (item.placeId === '__hotel__') {
       icon = '🏨'; name = 'Отель'; catKey = 'hotel';
     } else {
       const p = allPlaces.find(x => x.id === item.placeId);
       catKey = p?.category || 'other';
       const cat = CATEGORIES[catKey] || {};
-      icon = cat.icon || '📍'; name = p ? p.name : '(удалено)';
+      icon = cat.icon || '📍'; name = p ? p.name : '(удалено)'; url = p?.url;
     }
-    return { ...item, idx, startMinutes: start, endMinutes: end, startStr: minutesToTime(start), endStr: minutesToTime(end), icon, name, catKey };
+    return { ...item, idx, startMinutes: start, endMinutes: end, startStr: minutesToTime(start), endStr: minutesToTime(end), icon, name, catKey, url };
   });
 }
 
@@ -217,7 +217,9 @@ export function renderRoute(locId) {
                   <div class="tl-line"><div class="tl-dot tl-dot--${item.catKey}"></div></div>
                   <div class="tl-content">
                     <span class="tl-icon">${item.icon}</span>
-                    <span class="tl-name">${escHtml(item.name)}</span>
+                    ${item.url
+                      ? `<a class="tl-name tl-name--link" href="${escHtml(item.url)}" target="_blank" rel="noopener">${escHtml(item.name)}</a>`
+                      : `<span class="tl-name">${escHtml(item.name)}</span>`}
                     ${item.placeId !== '__hotel__'
                       ? `<select class="tl-duration" data-action="set-duration" data-route-id="${r.id}" data-item-idx="${item.idx}">${durOpts(item.duration)}</select>`
                       : '<span class="tl-duration" style="border:none;background:transparent;font-size:12px;color:var(--text2)">—</span>'}
